@@ -1,6 +1,15 @@
 from app import app
-from model.user_model import use_model
-obj = use_model()
-@app.route("/add")
+from flask import request
+
+from model.user_model import user_model
+
+
+obj = user_model()
+@app.route("/add_user", methods = ['POST'])
 def user_signup_controller():
-    return obj.user_sign_up()
+    print("||||||||||||||||||||||||")
+    data = request.json
+    print("||||||||||||||||||||||||")
+
+    print(data)
+    return obj.user_sign_up(data)
