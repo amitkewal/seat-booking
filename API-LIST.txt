@@ -2,6 +2,8 @@ get user_seats()
 get available_seats()
 get floor_plan()
 
+login_api()
+
 
 post update_user_seats()
 post send_confirmation_mail()
