@@ -9,11 +9,15 @@
 
 			{
 				"seat": "c1",
-				"date": "01-01-2024"
+				"date": "01-01-2024",
+				"start_time": "xxx",
+				"end_time": "xxx"
 			},
 			{
 				"seat": "c2",
-				"date": "01-01-2024"
+				"date": "01-01-2024",
+				"start_time": "xxx",
+				"end_time": "xxx"
 			}
 		],
 		"mobile_no": "+911245778899"
@@ -22,6 +26,7 @@
 	"seats":
 		{
 			"location":"pune",
+			"department": "it"
 			"total": 50,
 			"allocated" : 10,
 			"unallocated": 40,
