@@ -1,5 +1,4 @@
 from bson.json_util import dumps, loads
-import printjson
 
 from pymongo import MongoClient
 class user_model():

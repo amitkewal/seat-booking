@@ -1,15 +1,15 @@
-from app import app
-from flask import request
+from main import app
 
+from fastapi import FastAPI
+from schemas import User
 from model.user_model import user_model
 
 
 obj = user_model()
-@app.route("/add_user", methods = ['POST'])
-def user_signup_controller():
-    print("||||||||||||||||||||||||")
-    data = request.json
+@app.post("/add_user")
+def user_signup_controller(user : User):
+    print("||||||||||||||||||||||||", user)
     print("||||||||||||||||||||||||")
 
-    print(data)
-    return obj.user_sign_up(data)
+    print(user)
+    return obj.user_sign_up(user.model_dump())
