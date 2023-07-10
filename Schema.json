@@ -1,18 +1,30 @@
 {
-	"name": "akewal",
-	"email": "akewal@citco.com",
-	"department": "it",
-	"location": "pune",
-	"seat_allocation": [
+	"user":
+		{
+		"name": "akewal",
+		"email": "akewal@citco.com",
+		"department": "it",
+		"location": "pune",
+		"seat_allocation": [
 
+			{
+				"seat": "c1",
+				"date": "01-01-2024"
+			},
+			{
+				"seat": "c2",
+				"date": "01-01-2024"
+			}
+		],
+		"mobile_no": "+911245778899"
+	},
+
+	"seats":
 		{
-			"seat": "c1",
-			"date": "01-01-2024"
-		},
-		{
-			"seat": "c2",
-			"date": "01-01-2024"
+			"location":"pune",
+			"total": 50,
+			"allocated" : 10,
+			"unallocated": 40,
+			"map": "abc.jpg"
 		}
-	],
-	"mobile_no": "+911245778899"
 }
