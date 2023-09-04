@@ -1,3 +1,5 @@
 pymongo
 flask
 fastapi
+uvicorn
+boto3
