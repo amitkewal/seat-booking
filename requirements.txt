@@ -3,3 +3,4 @@ flask
 fastapi
 uvicorn
 boto3
+motor==2.3.0

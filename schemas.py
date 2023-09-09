@@ -14,6 +14,10 @@ class User(CamelModel):
     user_id: str
     password: str
 
+class UserCred(CamelModel):
+    email: str
+    password: str
+
 
 class UserResponse(CamelModel):
     message : str

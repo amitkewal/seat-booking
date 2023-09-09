@@ -1,4 +1,4 @@
-from bson.json_util import dumps, loads, json
+# from bson.json_util import dumps, loads, json
 import uuid
 from fastapi import HTTPException
 
@@ -27,6 +27,18 @@ class user_model():
             raise HTTPException(status_code=400, detail="Username already exists")
         else:
             return True
+        
+    def user_login(self, user):
+        # Find the user in MongoDB
+        existing_user =self.db.user.find_one({"email": user.email})
+        if existing_user is None:
+            return {"message": "User not found"}
+
+        if existing_user["password"] == hash(user.password):
+            return {"message": "Login successful"}
+
+        return {"message": "Invalid password"}
+
 
     def user_signup(self, user):
         result = self.db.user.insert_one(user)

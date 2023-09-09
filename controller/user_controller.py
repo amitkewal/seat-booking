@@ -1,15 +1,21 @@
 from main import app
 
-from fastapi import FastAPI
+# from fastapi import FastAPI
 
 # from fastapi import FastAPI, HTTPException, Form
-from schemas import User,SeatUpdate,SeatDelete
+from schemas import User,SeatUpdate,SeatDelete, UserCred
 from model.user_model import user_model
 
 from fastapi.responses import JSONResponse
 
 
 obj = user_model()
+
+# user login api
+@app.post("/login")
+async def login_user(userCred: UserCred):
+    return obj.user_login(userCred)
+
 
 
 # Create a user registration endpoint
@@ -18,7 +24,7 @@ async def register_user(user: User):
     # Check if the username already exists in the database
     if obj.verify_user(user.email):
         # Hash the password (you should use a proper password hashing library)
-        hashed_password = user.password  # Replace with actual password hashing
+        hashed_password = hash(user.password)  # Replace with actual password hashing
     
     # Insert the new user into the database
     new_user = {

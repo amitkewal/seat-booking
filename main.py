@@ -1,8 +1,13 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+import motor.motor_asyncio
 
 
 app = FastAPI()
+client = motor.motor_asyncio.AsyncIOMotorClient('127.0.0.1', 27017)
+db = client.college
+
+
 origins = ["*"]
 
 app.add_middleware(

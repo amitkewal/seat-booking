@@ -1,10 +1,10 @@
 from main import app
 
-from fastapi import FastAPI
+# from fastapi import FastAPI
 from schemas import SeatRequest
 from model.seat_model import seat_model
 
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
 
 obj = seat_model()
 @app.post("/get_seats")
