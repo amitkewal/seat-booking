@@ -1,17 +1,11 @@
 from bson.json_util import dumps, loads, json
 import uuid
-from pymongo import MongoClient
+# from pymongo import MongoClient
+from model import db
+
 class seat_model():
     def __init__(self):
-        client = MongoClient('127.0.0.1', 27017)
-        try:
-            client.seatqqq_booking.command('ping')
-            print("Pinged your seatqqqq_booking deployment. You successfully connected to MongoDB!")
-        except Exception as e:
-            print(e)
-
-        self.db = client['seatko']
-        # self.collection = self.db['user']
+        print("Inside Seat Model...")
 
     def update_seats(self, data):
         seats_shift1 = []
@@ -30,9 +24,9 @@ class seat_model():
             print("!!!!!!!!!!!!!!", seats_shift1)
             print("!!!!!!!!!!!!!!", seats_shift2)
             print("!!!!!!!!!!!!!!", data.get("location"))
-        # update_request = self.db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$set": {"seat_allocation.$":update_data}})
+        # update_request = db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$set": {"seat_allocation.$":update_data}})
 
-        update_request = self.db.seats.update_one({"location":data.get("location")}, {"$set": {"seats_shift1":seats_shift1,"seats_shift2":seats_shift2}})
+        update_request = db.seats.update_one({"location":data.get("location")}, {"$set": {"seats_shift1":seats_shift1,"seats_shift2":seats_shift2}})
 
 
         return "what"
@@ -41,7 +35,7 @@ class seat_model():
     def get_available_seats(self, data):
         print("+++++++++++++++++++", data)
 
-        update_response= self.db.seats.find_one({"location":data.get("location")})
+        update_response= db.seats.find_one({"location":data.get("location")})
         print("+++++++++++++++++++", update_response)
         print("+++++++++++++++++++", update_response.get("location"))
         if data.get("shift") == "shift1":
@@ -68,9 +62,9 @@ class seat_model():
                     shift = seat.get("shift")
 
             if shift == "shift1":
-                delete_seat = self.db.seats.update_one({"location":user.get("location"), "department":user.get("department")}, {"$pull": {"seats_shift1":{"booking_id":booking_id}}})
+                delete_seat = db.seats.update_one({"location":user.get("location"), "department":user.get("department")}, {"$pull": {"seats_shift1":{"booking_id":booking_id}}})
             else:
-                delete_seat = self.db.seats.update_one({"location":user.get("location"), "department":user.get("department")}, {"$pull": {"seats_shift2":{"booking_id":booking_id}}})
+                delete_seat = db.seats.update_one({"location":user.get("location"), "department":user.get("department")}, {"$pull": {"seats_shift2":{"booking_id":booking_id}}})
 
                             
             

@@ -62,7 +62,7 @@ class ObjectIdHelper(ObjectId):
 class CamelModel(BaseModel):
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {
             ObjectId: lambda i: str(i),

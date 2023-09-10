@@ -4,3 +4,5 @@ fastapi
 uvicorn
 boto3
 motor==2.3.0
+passlib
+asgi-correlation-id

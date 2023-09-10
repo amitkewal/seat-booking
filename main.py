@@ -1,13 +1,15 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-import motor.motor_asyncio
+from asgi_correlation_id import CorrelationIdMiddleware
 
+import logging
+# setup loggers
+logging.config.fileConfig('./core/logging.conf', disable_existing_loggers=False)
+
+# get root logger
+logger = logging.getLogger(__name__)  
 
 app = FastAPI()
-client = motor.motor_asyncio.AsyncIOMotorClient('127.0.0.1', 27017)
-db = client.college
-
-
 origins = ["*"]
 
 app.add_middleware(
@@ -18,9 +20,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(CorrelationIdMiddleware)
+
 
 @app.get("/")
+
 def welcome():
+    logger.info("logging from the root logger")
     return "kya re bhai!!!!"
 
 @app.get("/hi")

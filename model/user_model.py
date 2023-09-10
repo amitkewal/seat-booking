@@ -1,27 +1,24 @@
 # from bson.json_util import dumps, loads, json
 import uuid
 from fastapi import HTTPException
-
-from pymongo import MongoClient
+from passlib.hash import pbkdf2_sha256
+# from pymongo import MongoClient
 from service.mail_service import mail_service
 from model.seat_model import seat_model
 from dateutil import parser
 from datetime import datetime
+from model import db
+
+import logging
+logger = logging.getLogger(__name__) 
+
 
 class user_model():
     def __init__(self):
-        client = MongoClient('127.0.0.1', 27017)
-        try:
-            client.seatqqq_booking.command('ping')
-            print("Pinged your seatqqqq_booking deployment. You successfully connected to MongoDB!")
-        except Exception as e:
-            print(e)
-
-        self.db = client['seatko']
-        # self.collection = self.db['user']
+        print("in user model")
 
     def verify_user(self, email):
-        result = self.db.user.find_one({"email":str(email)},{'_id':0})
+        result = db.user.find_one({"email":str(email)},{'_id':0})
         print("|||||resulttttt", result)
         if result:
             raise HTTPException(status_code=400, detail="Username already exists")
@@ -30,18 +27,19 @@ class user_model():
         
     def user_login(self, user):
         # Find the user in MongoDB
-        existing_user =self.db.user.find_one({"email": user.email})
+        existing_user =db.user.find_one({"email": user.email})
         if existing_user is None:
             return {"message": "User not found"}
 
-        if existing_user["password"] == hash(user.password):
+        if pbkdf2_sha256.verify(user.password, existing_user["password"]):
+            logging.info(f"Model :: looging successful for:: {user.email}" )
             return {"message": "Login successful"}
 
         return {"message": "Invalid password"}
 
 
     def user_signup(self, user):
-        result = self.db.user.insert_one(user)
+        result = db.user.insert_one(user)
         inserted_id = str(result.inserted_id)
         return {"message": "User registered successfully", "user_id": inserted_id}
 
@@ -62,7 +60,7 @@ class user_model():
                 mail_date += (seat.get("day"))
             # print(user['name'],"########", new_seat)
 
-            book_seat = self.db.user.update_one({"name":user['name']}, {"$push":{"seat_allocation": {"$each":new_seat}}})
+            book_seat = db.user.update_one({"name":user['name']}, {"$push":{"seat_allocation": {"$each":new_seat}}})
             # if book_seat.modified_count == 0:
             #     return None
             updated_data = self.get_my_booking(user.get("name"))
@@ -82,9 +80,9 @@ class user_model():
 
     def get_my_booking(self,name):
         try:
-            # res = self.db.user.insert_one(data)
+            # res = db.user.insert_one(data)
 
-            res = self.db.user.find({"name":str(name)},{'_id':0})
+            res = db.user.find({"name":str(name)},{'_id':0})
             final_response = dict(res[0])
             # print("%%%%%%%%%%%%%%%%", final_response)
 
@@ -97,8 +95,8 @@ class user_model():
         try:
             current_date = datetime.today()
             days = list()
-            # res = self.db.user.insert_one(data)
-            res = self.db.user.find({"name":username},{'_id':0})
+            # res = db.user.insert_one(data)
+            res = db.user.find({"name":username},{'_id':0})
             final_response = dict(res[0])
             for seat in final_response.get("seat_allocation"):
                 seat_day = parser.parse(seat.get("day"))
@@ -113,7 +111,7 @@ class user_model():
     def get_my_booking_calendar(self,user_id,s_date,e_date):
             from datetime import date, timedelta
             from datetime import datetime
-            seat_details = list(self.db.user.find({"user_id":user_id},{"_id":0,"name":0,"department":0,"location":0,"mobile_no":0,"user_id":0}))
+            seat_details = list(db.user.find({"user_id":user_id},{"_id":0,"name":0,"department":0,"location":0,"mobile_no":0,"user_id":0}))
             print(seat_details)
             s = seat_details[0].get("seat_allocation")
             print(s)
@@ -158,7 +156,7 @@ class user_model():
             update_data["shift"] = seat.get("shift")
             # update_data['name'] = seat.get('name')
             # print("$$$$$$",update_data, seat)
-            update_request = self.db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$set": {"seat_allocation.$":update_data}})
+            update_request = db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$set": {"seat_allocation.$":update_data}})
             
             if update_request.modified_count == 0:
                 return False
@@ -179,7 +177,7 @@ class user_model():
             seat_obj.delete_seats(self.get_my_booking(seat.get("name")),seat.get("booking_id"))
             
 
-            update_request = self.db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$pull": {"seat_allocation":{"booking_id":seat.get("booking_id")}}})
+            update_request = db.user.update_one({"name":seat.get("name"), "seat_allocation.booking_id":seat.get("booking_id")}, {"$pull": {"seat_allocation":{"booking_id":seat.get("booking_id")}}})
             
             if update_request.modified_count == 0:
                 return False

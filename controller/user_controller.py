@@ -1,12 +1,13 @@
 from main import app
-
 # from fastapi import FastAPI
-
 # from fastapi import FastAPI, HTTPException, Form
 from schemas import User,SeatUpdate,SeatDelete, UserCred
 from model.user_model import user_model
-
 from fastapi.responses import JSONResponse
+from passlib.hash import pbkdf2_sha256
+import logging
+logging.config.fileConfig('./core/logging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)  
 
 
 obj = user_model()
@@ -14,31 +15,29 @@ obj = user_model()
 # user login api
 @app.post("/login")
 async def login_user(userCred: UserCred):
+    logging.info(f"Controller :: login api called for {userCred.email}")
     return obj.user_login(userCred)
-
-
 
 # Create a user registration endpoint
 @app.post("/sign_up")
 async def register_user(user: User):
     # Check if the username already exists in the database
     if obj.verify_user(user.email):
-        # Hash the password (you should use a proper password hashing library)
-        hashed_password = hash(user.password)  # Replace with actual password hashing
-    
-    # Insert the new user into the database
-    new_user = {
-        "username": user.name,
-        "password": hashed_password,
-        "email"   : user.email,
-        "department": user.department,
-        "location": user.department,
-        "seat_allocation": user.seat_allocation,
-        "mobile_no": user.mobile_no,
-        "user_id": user.user_id
+        # Hashing the password
+        hashed_password = pbkdf2_sha256.hash(user.password)  
+        # Create user payload
+        new_user = {
+            "username": user.name,
+            "password": hashed_password,
+            "email"   : user.email,
+            "department": user.department,
+            "location": user.department,
+            "seat_allocation": user.seat_allocation,
+            "mobile_no": user.mobile_no,
+            "user_id": user.user_id
 
-    }
-    return obj.user_signup(new_user)
+        }
+        return obj.user_signup(new_user)
 
 
 @app.post("/book_seats")
@@ -89,3 +88,6 @@ def user_delete_booking(seat: SeatDelete):
         return JSONResponse(content={"message":"bookings deleted successfully"})
     else:
         return JSONResponse(content={"message":"bookings failed to delete"}, status_code=404)
+
+
+
